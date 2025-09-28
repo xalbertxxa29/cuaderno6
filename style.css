@@ -380,3 +380,19 @@ html[data-theme="dark"] .input-group textarea{
   .btn-top-right{ top: calc(10px + env(safe-area-inset-top, 0px)); right: 10px; }
 }
 
+/* Miniatura de foto en formularios */
+.preview-thumb {
+  width: 96px;           /* mini */
+  height: 96px;          /* cuadrada */
+  object-fit: cover;     /* recorta sin deformar */
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #2a2f3a);
+  background: #fff;
+  display: block;
+  margin-top: .5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+
+/* Si prefieres aún más pequeña, cambia a 72px o 64px */
+
+
