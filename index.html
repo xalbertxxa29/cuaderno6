@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 
   <!-- Meta para PWA en móviles -->
+  <meta name="theme-color" content="#0d1117" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
 </head>
@@ -34,14 +35,14 @@
     <div id="login" class="tab-content" style="display: block;">
       <h1 class="login-title">Inicio de Sesión</h1>
       <div class="login-card">
-        <form id="login-form">
+        <form id="login-form" novalidate>
           <div class="input-group">
             <label for="login-id">ID de Usuario</label>
-            <input type="text" id="login-id" required placeholder=""/>
+            <input type="text" id="login-id" required placeholder="" autocomplete="username" inputmode="text" />
           </div>
           <div class="input-group">
             <label for="login-password">Contraseña</label>
-            <input type="password" id="login-password" required placeholder=""/>
+            <input type="password" id="login-password" required placeholder="" autocomplete="current-password" minlength="6"/>
           </div>
           <button id="login-btn" type="submit">Acceder</button>
         </form>
@@ -52,18 +53,18 @@
     <div id="register" class="tab-content">
       <h1 class="login-title">Crear Cuenta</h1>
       <div class="login-card">
-        <form id="register-form">
+        <form id="register-form" novalidate>
           <div class="input-group">
             <label for="register-id">ID o Usuario</label>
-            <input type="text" id="register-id" required>
+            <input type="text" id="register-id" required autocomplete="username" />
           </div>
           <div class="input-group">
             <label for="register-nombres">Nombres</label>
-            <input type="text" id="register-nombres" required>
+            <input type="text" id="register-nombres" required />
           </div>
           <div class="input-group">
             <label for="register-apellidos">Apellidos</label>
-            <input type="text" id="register-apellidos" required>
+            <input type="text" id="register-apellidos" required />
           </div>
 
           <!-- Cliente -->
@@ -115,12 +116,12 @@
 
           <div class="input-group">
             <label for="register-password">Contraseña (mín. 6 caracteres)</label>
-            <input type="password" id="register-password" required>
+            <input type="password" id="register-password" required autocomplete="new-password" minlength="6" />
           </div>
 
           <div class="input-group">
             <label for="register-password-confirm">Repetir Contraseña</label>
-            <input type="password" id="register-password-confirm" required>
+            <input type="password" id="register-password-confirm" required autocomplete="new-password" minlength="6" />
           </div>
 
           <button id="register-btn" type="submit">Registrar</button>
@@ -138,14 +139,47 @@
     </div>
   </div>
 
+  <!-- Overlay de carga/alert reutilizable -->
+  <div id="loadingOverlay" hidden>
+    <div class="loading-box">
+      <div class="loading-brand"><div class="loading-ring"></div></div>
+      <div class="loading-title">Cargando…</div>
+      <div class="loading-sub">Por favor, espera un momento.</div>
+      <div class="progress-wrap"><div class="progress-bar"></div></div>
+    </div>
+  </div>
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+  <!-- Config / Inicialización / Utilidades -->
   <script src="firebase-config.js?v=51"></script>
   <script src="initFirebase.js?v=51"></script>
   <script src="ui.js?v=51"></script>
+  <script src="webview.js?v=51"></script>
+
+  <!-- Lógica de autenticación -->
   <script src="auth.js?v=51"></script>
+
+  <!-- Auto-redirect si ya hay sesión restaurada -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        // Redirige automáticamente al menú si Firebase restaura la sesión
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            window.location.replace('menu.html'); // evita volver al login con "Atrás"
+          }
+        });
+      } catch (e) {
+        console.warn('Auth redirect check error:', e);
+      }
+    });
+  </script>
 
   <!-- Tabs + Tema + SW -->
   <script>
@@ -171,9 +205,7 @@
 
     // Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').then(()=>{
-        // listo
-      }).catch(()=>{});
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
     }
   </script>
 </body>
